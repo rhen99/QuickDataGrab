@@ -1,28 +1,46 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Navbar />
+    <div class="main-area d-flex"></div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import Navbar from "./components/layouts/Navbar";
+import Inputs from "./components/Inputs";
+import Output from "./components/Output";
 export default {
-  name: 'app',
+  name: "app",
   components: {
-    HelloWorld
+    Navbar,
+    Inputs,
+    Output
   }
-}
+};
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body {
+  font-family: "Roboto", sans-serif;
+  line-height: 1.4;
+  background-color: #ecf4ff;
+}
+.d-flex {
+  display: flex;
+  width: 100%;
+}
+.container {
+  width: 1100px;
+  margin: auto;
+  padding: 0 1rem;
+}
+.main-area {
+  height: 80vh;
 }
 </style>
