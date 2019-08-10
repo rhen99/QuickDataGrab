@@ -45,9 +45,4 @@ export default {
 input[type="range"] {
   width: 100%;
 }
-input[type="range"]::-webkit-slider-runnable-track,
-input[type="range"]::-ms-slider-runnable-track,
-input[type="range"]::-moz-slider-runnable-track {
-  width: 10%;
-}
 </style>
