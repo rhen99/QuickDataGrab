@@ -1,7 +1,10 @@
 <template>
   <div id="app">
     <Navbar />
-    <div class="main-area d-flex"></div>
+    <div class="main-area d-flex">
+      <Inputs />
+      <Output />
+    </div>
   </div>
 </template>
 
