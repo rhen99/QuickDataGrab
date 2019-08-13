@@ -14,10 +14,13 @@ export default {
 
 <style scoped>
 .navbar {
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(41, 85, 167);
+  z-index: 10;
+  box-shadow: 0 3px 5px rgba(94, 94, 94, 0.212);
+  position: relative;
 }
 h1 {
-  color: rgb(41, 85, 167);
+  color: rgb(255, 255, 255);
   font-weight: 400;
   font-size: 1.3rem;
   padding: 1rem 0;
