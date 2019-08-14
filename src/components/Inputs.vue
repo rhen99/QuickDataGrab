@@ -5,17 +5,17 @@
       <div class="input-field">
         <div name="data_type" class="select">
           <p @click="drop">
-            Select the Data You Want Here...
+            {{dropDownCurrent}}
             <i
               class="fas icon"
               :class="{'fa-caret-up': dropped, 'fa-caret-down': !dropped}"
             ></i>
           </p>
           <div class="options" :class="{'droplist': dropped}">
-            <a href="#">Users</a>
-            <a href="#">Todos</a>
-            <a href="#">Posts</a>
-            <a href="#">Businesses</a>
+            <a href="#" @click="select" data-type="users">Users</a>
+            <a href="#" @click="select" data-type="todos">Todos</a>
+            <a href="#" @click="select" data-type="posts">Posts</a>
+            <a href="#" @click="select" data-type="business">Businesses</a>
           </div>
         </div>
       </div>
@@ -25,7 +25,7 @@
       </div>
       <div class="input-field">
         <label>How Many?</label>
-        <input type="range" class="slider" step="1" min="1" max="10000" v-model="range" />
+        <input type="range" class="slider" step="1" min="1" max="100" v-model="range" />
         <span class="counter">{{range}}</span>
       </div>
       <div class="btns input-field">
@@ -42,12 +42,18 @@ export default {
   data() {
     return {
       dropped: false,
-      range: 10
+      range: 10,
+      dropDownCurrent: "Select the Data You Want Here..."
     };
   },
   methods: {
     drop() {
       this.dropped = !this.dropped;
+    },
+    select(e) {
+      e.preventDefault();
+      this.dropDownCurrent = e.target.innerHTML;
+      this.dropped = false;
     }
   }
 };
