@@ -28,34 +28,46 @@
         <input type="range" class="slider" step="1" min="1" max="100" v-model="range" />
         <span class="counter">{{range}}</span>
       </div>
-      <div class="btns input-field">
+      <div class="btns input-field" v-if="gotData">
         <button class="btn json">Download JSON</button>
         <button class="btn sql">Download SQL</button>
+      </div>
+      <div class="btns input-field" v-else>
+        <button class="btn-block generate" @click="generateData">Generate Data</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "Inputs",
   data() {
     return {
+      chosenData: "",
       dropped: false,
       range: 10,
-      dropDownCurrent: "Select the Data You Want Here..."
+      dropDownCurrent: "Select the Data You Want Here...",
+      gotData: false
     };
   },
   methods: {
     drop() {
       this.dropped = !this.dropped;
     },
+    generateData() {
+      this.gotData = true;
+    },
+
     select(e) {
       e.preventDefault();
       this.dropDownCurrent = e.target.innerHTML;
+      this.chosenData = e.target.dataset["type"];
       this.dropped = false;
     }
-  }
+  },
+  created() {}
 };
 </script>
 
@@ -210,5 +222,24 @@ a:hover {
 .btn.sql {
   background-color: rgb(64, 41, 167);
   color: #f4f4f4;
+}
+.btn-block {
+  margin: 0;
+  width: 70%;
+  border: 0;
+  outline: 0;
+  font-size: 2.3rem;
+  font-weight: 600;
+  padding: 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 300ms;
+}
+.btn-block.generate {
+  background-color: rgb(41, 85, 167);
+  color: #fff;
+}
+.btn-block:active {
+  transform: scale(0.95);
 }
 </style>
