@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import db from "./firebase/firebaseInit";
 export default {
   name: "Inputs",
   data() {
@@ -49,7 +49,8 @@ export default {
       dropped: false,
       range: 10,
       dropDownCurrent: "Select the Data You Want Here...",
-      gotData: false
+      gotData: false,
+      data: []
     };
   },
   methods: {
@@ -58,6 +59,17 @@ export default {
     },
     generateData() {
       this.gotData = true;
+      const docRef = db.collection(this.chosenData);
+      docRef
+        .get()
+        .then(qss => {
+          qss.forEach(doc => {
+            this.data.push(doc.data());
+          });
+          console.log(this.data);
+        })
+        .catch(err => console.log(err));
+      this.$emit("generated");
     },
 
     select(e) {

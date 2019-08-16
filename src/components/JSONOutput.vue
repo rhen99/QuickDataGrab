@@ -4,17 +4,21 @@
   </div>
 </template>
 <script>
-import hjs from "highlightjs/highlight.pack";
+import hjs from "highlight.js";
 export default {
   name: "JSONOutput",
   props: ["jsonData"],
   created() {
-    hjs.initHighlightingOnload();
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll("pre code").forEach(block => {
+        hjs.highlightBlock(block);
+      });
+    });
   }
 };
 </script>
 <style scoped>
-@import url("../../node_modules/highlightjs/styles/default.css");
+@import url("../../node_modules/highlight.js/styles/default.css");
 pre {
   width: 100%;
   height: 100%;

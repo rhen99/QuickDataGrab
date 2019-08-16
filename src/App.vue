@@ -2,8 +2,8 @@
   <div id="app">
     <Navbar />
     <div class="main-area d-flex">
-      <Inputs />
-      <Output />
+      <Inputs v-on:generated="changeOutput" />
+      <Output v-bind:currentOutput="currentOutput" v-bind:currentOutputProps="currentOutputProps" />
     </div>
   </div>
 </template>
@@ -18,6 +18,17 @@ export default {
     Navbar,
     Inputs,
     Output
+  },
+  data() {
+    return {
+      currentOutput: "start",
+      currentOutputProps: {}
+    };
+  },
+  methods: {
+    changeOutput() {
+      this.currentOutput = "json";
+    }
   }
 };
 </script>

@@ -4,7 +4,7 @@
       <button class="btn json" @click="currentOutput = 'json'">View JSON</button>
       <button class="btn sql" @click="currentOutput = 'sql'">View SQL</button>
     </div>
-    <component :is="currentOutput" v-bind="currentDataOutput" />
+    <component :is="currentOutput" v-bind="currentOutputProps" />
   </div>
 </template>
 <script>
@@ -18,15 +18,8 @@ export default {
     start: Start
   },
   name: "Output",
-  created() {},
-  data() {
-    return {
-      requested: false,
-      currentOutput: "start",
-      currentDataOutput: {}
-    };
-  },
-  computed: {}
+  props: ["currentOutput", "currentOutputProps"],
+  created() {}
 };
 </script>
 <style scoped>
