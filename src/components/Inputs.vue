@@ -97,10 +97,8 @@ export default {
       const jsonBlob = new Blob([this.jsonData], { type: "application/json" });
       FileSaver.saveAs(jsonBlob, `${this.db_name}.json`);
     },
-    sqlify() {
-      console.log(this.checkProp(false));
-    },
-    checkProp(prop) {
+    sqlify() {},
+    setProp(prop) {
       const digit = /^\d+$/;
 
       if (typeof prop === "string") {
