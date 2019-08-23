@@ -1,9 +1,8 @@
 <template>
   <div id="app">
     <Navbar />
-    <div class="main-area d-flex">
-      <Inputs v-on:generated="changeOutput" />
-      <Output v-bind:currentOutput="currentOutput" v-bind:currentOutputProps="currentOutputProps" />
+    <div class="main-area">
+      <Inputs />
     </div>
   </div>
 </template>
@@ -11,25 +10,18 @@
 <script>
 import Navbar from "./components/layouts/Navbar";
 import Inputs from "./components/Inputs";
-import Output from "./components/Output";
 export default {
   name: "app",
   components: {
     Navbar,
-    Inputs,
-    Output
+    Inputs
   },
   data() {
     return {
-      currentOutput: "start",
-      currentOutputProps: {}
+      data: []
     };
   },
-  methods: {
-    changeOutput() {
-      this.currentOutput = "json";
-    }
-  }
+  methods: {}
 };
 </script>
 
@@ -43,7 +35,7 @@ html,
 body {
   font-family: "Roboto", sans-serif;
   line-height: 1.4;
-  background-color: #ecf4ff;
+  background-color: #fff;
 }
 .d-flex {
   display: flex;
@@ -55,6 +47,6 @@ body {
   padding: 0 1rem;
 }
 .main-area {
-  height: 80vh;
+  height: 100vh;
 }
 </style>

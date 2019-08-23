@@ -1,7 +1,7 @@
 <template>
   <div class="inputs">
-    <h1>Generate Dummy Data For Your Projects</h1>
-    <div class="fields">
+    <h1>Get Data Very Quickly</h1>
+    <div class="fields d-flex">
       <div class="input-field">
         <div name="data_type" class="select">
           <p @click="drop">
@@ -21,7 +21,7 @@
       </div>
       <div class="input-field">
         <label for="db">Database Name</label>
-        <input type="text" id="db" class="db-name" />
+        <input type="text" v-model="db_name" id="db" class="db-name" />
       </div>
       <div class="input-field">
         <label>How Many?</label>
@@ -29,7 +29,7 @@
         <span class="counter">{{range}}</span>
       </div>
       <div class="btns input-field" v-if="gotData">
-        <button class="btn json">Download JSON</button>
+        <button class="btn json" @click="jsonDL">Download JSON</button>
         <button class="btn sql">Download SQL</button>
       </div>
       <div class="btns input-field" v-else>
@@ -41,16 +41,18 @@
 
 <script>
 import db from "./firebase/firebaseInit";
+import FileSaver from "file-saver";
 export default {
   name: "Inputs",
   data() {
     return {
-      chosenData: "",
+      jsonData: "",
       dropped: false,
       range: 10,
       dropDownCurrent: "Select the Data You Want Here...",
       gotData: false,
-      data: []
+      data: [],
+      db_name: ""
     };
   },
   methods: {
@@ -58,18 +60,25 @@ export default {
       this.dropped = !this.dropped;
     },
     generateData() {
-      this.gotData = true;
-      const docRef = db.collection(this.chosenData);
+      const limit = parseInt(this.range);
+      const docRef = db.collection(this.chosenData).limit(limit);
       docRef
         .get()
         .then(qss => {
-          qss.forEach(doc => {
-            this.data.push(doc.data());
-          });
-          console.log(this.data);
+          if (qss || qss.exists) {
+            qss.forEach(doc => {
+              this.data.push(doc.data());
+            });
+            this.jsonify(this.data);
+            this.sqlify();
+            this.gotData = true;
+          } else {
+            console.log("No such doc exists");
+          }
         })
-        .catch(err => console.log(err));
-      this.$emit("generated");
+        .catch(err => {
+          console.log(err);
+        });
     },
 
     select(e) {
@@ -77,6 +86,39 @@ export default {
       this.dropDownCurrent = e.target.innerHTML;
       this.chosenData = e.target.dataset["type"];
       this.dropped = false;
+    },
+    jsonify(data) {
+      let json = data.map(item => {
+        return JSON.stringify(item);
+      });
+      this.jsonData = `[${json}]`;
+    },
+    jsonDL() {
+      const jsonBlob = new Blob([this.jsonData], { type: "application/json" });
+      FileSaver.saveAs(jsonBlob, `${this.db_name}.json`);
+    },
+    sqlify() {
+      console.log(this.checkProp(false));
+    },
+    checkProp(prop) {
+      const digit = /^\d+$/;
+
+      if (typeof prop === "string") {
+        if (digit.test(prop)) {
+          return "int(11)";
+        } else {
+          if (prop.length > 255) {
+            return "text";
+          } else {
+            console.log(prop.length);
+            return "varchar(255)";
+          }
+        }
+      } else {
+        if (typeof prop === "boolean") {
+          return "BOOLEAN";
+        }
+      }
     }
   },
   created() {}
@@ -85,10 +127,10 @@ export default {
 
 <style scoped>
 .inputs {
-  background-color: #fff;
   overflow-y: hidden;
-  width: 50%;
+  width: 100%;
   padding: 2rem;
+  height: 80%;
 }
 h1 {
   font-weight: 500;
@@ -97,9 +139,12 @@ h1 {
 }
 .fields {
   margin-top: 2rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .input-field {
-  width: 100%;
+  width: 50%;
   padding: 0.5rem 0;
   position: relative;
   margin: 0.5rem 0;
@@ -122,7 +167,6 @@ input[type="range"] {
 }
 .select {
   width: 100%;
-  background-color: #fff;
   max-height: 500px;
   overflow: hidden;
   border-radius: 10px;
