@@ -2,6 +2,9 @@
   <div class="inputs">
     <h1>Get Data Very Quickly</h1>
     <div class="fields d-flex">
+      <div v-if="errors.catch !== ''" class="error_flash">
+        <p>{{errors.catch}}</p>
+      </div>
       <div class="input-field">
         <div name="data_type" class="select">
           <p @click="drop">
@@ -18,10 +21,12 @@
             <a href="#" @click="select" data-type="business">Businesses</a>
           </div>
         </div>
+        <span>{{errors.no_type}}</span>
       </div>
       <div class="input-field">
-        <label for="db">Database Name</label>
+        <label for="db">Table / Collection Name</label>
         <input type="text" v-model="db_name" id="db" class="db-name" />
+        <span>{{errors.no_dbname}}</span>
       </div>
       <div class="input-field">
         <label>How Many?</label>
@@ -30,7 +35,7 @@
       </div>
       <div class="btns input-field" v-if="gotData">
         <button class="btn json" @click="jsonDL">Download JSON</button>
-        <button class="btn sql">Download SQL</button>
+        <button class="btn sql" @click="sqlDL">Download SQL</button>
       </div>
       <div class="btns input-field" v-else>
         <button class="btn-block generate" @click="generateData">Generate Data</button>
@@ -46,7 +51,13 @@ export default {
   name: "Inputs",
   data() {
     return {
+      errors: {
+        catch: "",
+        no_type: "",
+        no_dbname: ""
+      },
       jsonData: "",
+      sqlData: ``,
       dropped: false,
       range: 10,
       dropDownCurrent: "Select the Data You Want Here...",
@@ -60,25 +71,32 @@ export default {
       this.dropped = !this.dropped;
     },
     generateData() {
-      const limit = parseInt(this.range);
-      const docRef = db.collection(this.chosenData).limit(limit);
-      docRef
-        .get()
-        .then(qss => {
-          if (qss || qss.exists) {
-            qss.forEach(doc => {
-              this.data.push(doc.data());
-            });
-            this.jsonify(this.data);
-            this.sqlify();
-            this.gotData = true;
-          } else {
-            console.log("No such doc exists");
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      if (this.chosenData !== "" && this.db_name !== "") {
+        const limit = parseInt(this.range);
+        const docRef = db.collection(this.chosenData).limit(limit);
+        docRef
+          .get()
+          .then(qss => {
+            if (qss || qss.exists) {
+              this.errors.no_dbname = "";
+              this.errors.no_type = "";
+              this.errors.catch = "";
+              qss.forEach(doc => {
+                this.data.push(doc.data());
+              });
+              this.jsonify(this.data);
+              this.sqlify(this.data);
+              this.gotData = true;
+            }
+          })
+          .catch(() => {
+            this.errors.catch = `Something went wrong, please check your internet connection, and try again.`;
+          });
+      } else {
+        this.errors.no_dbname = "Please fill in all fields.";
+        this.errors.no_type = "Please fill in all fields.";
+        return false;
+      }
     },
 
     select(e) {
@@ -97,8 +115,7 @@ export default {
       const jsonBlob = new Blob([this.jsonData], { type: "application/json" });
       FileSaver.saveAs(jsonBlob, `${this.db_name}.json`);
     },
-    sqlify() {},
-    setProp(prop) {
+    setPropType(prop) {
       const digit = /^\d+$/;
 
       if (typeof prop === "string") {
@@ -108,18 +125,84 @@ export default {
           if (prop.length > 255) {
             return "text";
           } else {
-            console.log(prop.length);
             return "varchar(255)";
           }
         }
-      } else {
-        if (typeof prop === "boolean") {
-          return "BOOLEAN";
+      } else if (typeof prop === "boolean") {
+        return "BOOLEAN";
+      } else if (Array.isArray(prop)) {
+        prop.join(",");
+        if (prop.length > 255) {
+          return "text";
+        } else {
+          return "varchar(255)";
         }
       }
+    },
+    createProp(key, val) {
+      return `\`${key}\` ${this.setPropType(val)} NOT NULL,\n\t`;
+    },
+
+    makeTable(cols) {
+      let props = "";
+      delete cols[0].id;
+
+      Object.keys(cols[0]).forEach((key, i) => {
+        props += this.createProp(key, Object.values(cols[0])[i]);
+      });
+
+      let table = `CREATE TABLE \`${this.db_name}\` (
+        \`id\` int(11) NOT NULL AUTO_INCREMENT,
+        ${props}\`created_at\` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY(\`id\`)
+      );
+      \n`;
+      return table;
+    },
+    makeInserts(rows) {
+      const digit = /^\d+$/;
+      let inserts = "";
+      const insertables = [];
+
+      const cols = Object.keys(rows[0]).map(key => {
+        return "`" + key + "`";
+      });
+
+      rows.forEach(row => {
+        const rowVal = Object.values(row);
+        const mappedVals = rowVal.map(val => {
+          if (
+            !digit.test(val) &&
+            typeof val !== "boolean" &&
+            !Array.isArray(val)
+          ) {
+            return `'${val}'`;
+          } else if (Array.isArray(val)) {
+            return `'${val.join(",")}'`;
+          } else {
+            return val;
+          }
+        });
+        const values = `(${mappedVals.join(", ")})`;
+        insertables.push(values);
+      });
+
+      inserts = `INSERT INTO \`${this.db_name}\` (${cols.join(
+        ", "
+      )}) VALUES \n ${insertables.join(",\n")};`;
+      return inserts;
+    },
+    sqlify(data) {
+      let inserts = this.makeInserts([...data]);
+      let table = this.makeTable([...data]);
+
+      this.sqlData = `${table} ${inserts}`;
+    },
+    sqlDL() {
+      const sqlBlob = new Blob([this.sqlData], { type: "plain/text" });
+      FileSaver.saveAs(sqlBlob, `${this.db_name}.sql`);
     }
-  },
-  created() {}
+  }
 };
 </script>
 
@@ -295,5 +378,15 @@ a:hover {
 }
 .btn-block:active {
   transform: scale(0.95);
+}
+.error_flash {
+  padding: 1rem;
+  background-color: rgb(255, 143, 143);
+  color: rgb(185, 0, 0);
+}
+span {
+  display: inline-block;
+  color: rgb(185, 0, 0);
+  padding: 0 0.5rem;
 }
 </style>
