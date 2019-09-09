@@ -1,13 +1,15 @@
 <template>
   <div class="inputs">
     <h1>Get Data Very Quickly</h1>
+    <p class="sub-title">All these data are for testing only.</p>
     <div class="fields d-flex">
       <div v-if="errors.catch !== ''" class="error_flash">
         <p>{{errors.catch}}</p>
       </div>
       <div class="input-field">
         <div name="data_type" class="select">
-          <p @click="drop">
+          <p @click="drop" :class="{'select-focus': dropped}">
+            <i :class="[icon]"></i>
             {{dropDownCurrent}}
             <i
               class="fas icon"
@@ -15,10 +17,15 @@
             ></i>
           </p>
           <div class="options" :class="{'droplist': dropped}">
-            <a href="#" @click="select" data-type="users">Users</a>
-            <a href="#" @click="select" data-type="todos">Todos</a>
-            <a href="#" @click="select" data-type="posts">Posts</a>
-            <a href="#" @click="select" data-type="business">Businesses</a>
+            <a href="#" @click="select" data-type="users">
+              <i class="fas fa-user fa-1x"></i> Users
+            </a>
+            <a href="#" @click="select" data-type="todos">
+              <i class="fas fa-list-ol fa-1x"></i> Todos
+            </a>
+            <a href="#" @click="select" data-type="posts">
+              <i class="far fa-newspaper fa-1x"></i> Posts
+            </a>
           </div>
         </div>
         <span>{{errors.no_type}}</span>
@@ -63,7 +70,8 @@ export default {
       dropDownCurrent: "Select the Data You Want Here...",
       gotData: false,
       data: [],
-      db_name: ""
+      db_name: "",
+      icon: ""
     };
   },
   methods: {
@@ -101,7 +109,8 @@ export default {
 
     select(e) {
       e.preventDefault();
-      this.dropDownCurrent = e.target.innerHTML;
+      this.dropDownCurrent = e.target.innerText;
+      this.icon = e.target.childNodes[0].classList.value;
       this.chosenData = e.target.dataset["type"];
       this.dropped = false;
     },
@@ -218,6 +227,9 @@ h1 {
   text-align: center;
   font-size: 1.7rem;
 }
+.sub-title {
+  text-align: center;
+}
 .fields {
   margin-top: 2rem;
   flex-direction: column;
@@ -251,7 +263,7 @@ input[type="range"] {
   max-height: 500px;
   overflow: hidden;
   border-radius: 10px;
-  color: rgb(41, 85, 167);
+  color: rgb(37, 37, 37);
 }
 .select p {
   padding: 1rem;
@@ -262,9 +274,14 @@ input[type="range"] {
   transition: all 300ms;
 }
 .select p:hover {
-  background-color: rgb(41, 85, 167);
+  background-color: rgb(32, 32, 32);
   color: #fff;
 }
+.select-focus {
+  background-color: rgb(32, 32, 32);
+  color: #fff;
+}
+
 .icon {
   position: absolute;
   right: 3%;
@@ -281,11 +298,10 @@ a {
   display: block;
   padding: 1rem;
   text-decoration: none;
-  color: rgb(41, 85, 167);
-  transition: color 200ms;
+  color: rgb(32, 32, 32);
 }
 a:hover {
-  background-color: rgb(41, 85, 167);
+  background-color: rgb(0, 162, 255);
   color: #fff;
 }
 .slider {
@@ -293,7 +309,7 @@ a:hover {
   -webkit-appearance: none;
   -moz-appearance: none;
   height: 2px;
-  background-color: rgb(70, 106, 172);
+  background-color: rgb(32, 32, 32);
   position: relative;
   margin: 1.8rem 0;
 }
@@ -305,7 +321,7 @@ a:hover {
   width: 20px;
   background: linear-gradient(180deg, #f4f4f4, rgb(197, 196, 196), #f4f4f4);
   border-radius: 50%;
-  border: 3px solid rgb(41, 85, 167);
+  border: rgb(0, 162, 255) 3px solid;
 }
 
 .slider::-moz-range-thumb {
@@ -316,6 +332,7 @@ a:hover {
   width: 15px;
   background: linear-gradient(180deg, #f4f4f4, rgb(197, 196, 196));
   border-radius: 50%;
+  border: rgb(0, 162, 255) 3px solid;
 }
 .slider::-ms-thumb {
   appearance: none;
@@ -325,12 +342,13 @@ a:hover {
   width: 15px;
   background: linear-gradient(180deg, #f4f4f4, rgb(197, 196, 196));
   border-radius: 50%;
+  border: rgb(0, 162, 255) 3px solid;
 }
 .counter {
   position: absolute;
   bottom: 0;
   right: 2%;
-  background-color: rgb(41, 85, 167);
+  background-color: rgb(0, 162, 255);
   color: #f4f4f4;
   padding: 5px;
   border-radius: 10px;
@@ -373,7 +391,7 @@ a:hover {
   transition: transform 300ms;
 }
 .btn-block.generate {
-  background-color: rgb(41, 85, 167);
+  background-color: rgb(44, 44, 44);
   color: #fff;
 }
 .btn-block:active {

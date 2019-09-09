@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar">
     <div class="container d-flex">
-      <h1>JSOND Factory</h1>
+      <h1>Quick Data Grab</h1>
     </div>
   </nav>
 </template>
@@ -14,7 +14,7 @@ export default {
 
 <style scoped>
 .navbar {
-  background-color: rgb(41, 85, 167);
+  background-color: rgb(0, 162, 255);
   z-index: 10;
   box-shadow: 0 3px 5px rgba(94, 94, 94, 0.212);
   position: relative;

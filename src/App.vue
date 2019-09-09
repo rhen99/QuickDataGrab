@@ -3,18 +3,27 @@
     <Navbar />
     <div class="main-area">
       <Inputs />
+      <About />
+      <Tutorials />
     </div>
+    <Footer />
   </div>
 </template>
 
 <script>
 import Navbar from "./components/layouts/Navbar";
 import Inputs from "./components/Inputs";
+import About from "./components/About";
+import Tutorials from "./components/Tutorials";
+import Footer from "./components/Footer";
 export default {
   name: "app",
   components: {
     Navbar,
-    Inputs
+    Inputs,
+    About,
+    Tutorials,
+    Footer
   },
   data() {
     return {
@@ -35,11 +44,14 @@ html,
 body {
   font-family: "Roboto", sans-serif;
   line-height: 1.4;
-  background-color: #fff;
+  background-color: #f5f2f2;
 }
 .d-flex {
   display: flex;
   width: 100%;
+}
+.d-grid {
+  display: grid;
 }
 .container {
   width: 1100px;
@@ -47,6 +59,6 @@ body {
   padding: 0 1rem;
 }
 .main-area {
-  height: 100vh;
+  min-height: 100vh;
 }
 </style>
