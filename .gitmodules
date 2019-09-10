@@ -1,0 +1,4 @@
+[submodule "dist"]
+	path = dist
+	url = https://github.com/rhen99/QuickDataGrab.git
+	branch = deploy-app
